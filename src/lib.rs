@@ -28,6 +28,8 @@ pub enum MediaType {
   Json,
   Wasm,
   SourceMap,
+  Text,
+  Binary,
   Unknown,
 }
 
@@ -51,17 +53,13 @@ impl MediaType {
       Self::Tsx => ".tsx",
       Self::Css => ".css",
       Self::Json => ".json",
-      // TypeScript doesn't have an "unknown", so we will treat WASM as JS for
+      // TypeScript doesn't have an "unknown", so we will treat these as JS for
       // mapping purposes, though in reality, it is unlikely to ever be passed
       // to the compiler.
       Self::Wasm => ".js",
-      // TypeScript doesn't have an "source map", so we will treat SourceMap as
-      // JS for mapping purposes, though in reality, it is unlikely to ever be
-      // passed to the compiler.
       Self::SourceMap => ".js",
-      // TypeScript doesn't have an "unknown", so we will treat unknowns as JS
-      // for mapping purposes, though in reality, it is unlikely to ever be
-      // passed to the compiler.
+      Self::Text => ".js",
+      Self::Binary => ".js",
       Self::Unknown => ".js",
     }
   }
@@ -91,6 +89,8 @@ impl MediaType {
       Self::Json => Some("application/json"),
       Self::Wasm => Some("application/wasm"),
       Self::SourceMap => Some("application/json"),
+      Self::Text => Some("text/plain"),
+      Self::Binary => Some("application/octet-stream"),
       Self::Unknown => None,
     }
   }
@@ -111,6 +111,8 @@ impl MediaType {
       | Self::Json
       | Self::Wasm
       | Self::SourceMap
+      | Self::Text
+      | Self::Binary
       | Self::Unknown => false,
     }
   }
@@ -133,6 +135,8 @@ impl MediaType {
       | MediaType::Json
       | MediaType::Wasm
       | MediaType::SourceMap
+      | MediaType::Text
+      | MediaType::Binary
       | MediaType::Unknown => false,
     }
   }
@@ -151,6 +155,8 @@ impl MediaType {
       | Self::Dcts
       | Self::Tsx
       | Self::Json
+      | Self::Text // { default: string }
+      | Self::Binary // { default: ArrayBuffer }
       | Self::Wasm => true,
       Self::JavaScript
       | Self::Jsx
@@ -350,6 +356,8 @@ impl fmt::Display for MediaType {
       Self::Json => "Json",
       Self::Wasm => "Wasm",
       Self::SourceMap => "SourceMap",
+      Self::Text => "Text",
+      Self::Binary => "Binary",
       Self::Unknown => "Unknown",
     };
     write!(f, "{}", value)
@@ -394,6 +402,8 @@ fn map_js_like_extension(
     | MediaType::Css
     | MediaType::Json
     | MediaType::Wasm
+    | MediaType::Text
+    | MediaType::Binary
     | MediaType::SourceMap
     | MediaType::Unknown => default,
   }
